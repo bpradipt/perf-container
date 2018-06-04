@@ -10,7 +10,7 @@ echo "Monitored PIDs: " "${PIDS[*]}"
 PERF_PIDS=`(IFS=$','; echo "${PIDS[*]}")`
 
 function start_perf() {
-   timeout 60  perf stat -a -p $PERF_PIDS -x ',' -I 1000
+   timeout -t 60  /perf stat -a -p $PERF_PIDS -x ',' -I 1000
 }
 
 while read i; do if [ "$i" = startperf ]; then start_perf; break; fi; done \
