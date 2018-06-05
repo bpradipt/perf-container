@@ -23,11 +23,11 @@ release: image ## Pushes the image with latest and version tag to dockerhub, REQ
 	docker push "$(IMAGE_ARCH):latest"
 
 manifest: release ## Create multi-arch manifest
-	docker manifest create $(IMAGE):$(RELEASE_TAG) \
+	docker manifest create --amend $(IMAGE):$(RELEASE_TAG) \
 	$(IMAGE)-amd64:$(RELEASE_TAG) \
 	$(IMAGE)-ppc64le:$(RELEASE_TAG)
 
-	docker manifest create $(IMAGE):latest \
+	docker manifest create --amend $(IMAGE):latest \
 	$(IMAGE)-amd64:latest \
 	$(IMAGE)-ppc64le:latest
 
