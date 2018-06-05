@@ -1,7 +1,7 @@
 #!/bin/bash
 TIMEOUT=${1:-60}
 COUNT=${2:-1}
-
+OUT_SUFFIX=${HOSTNAME:+-$HOSTNAME}
 declare -a PIDS
 PIDS=($(ps -A -o pid=))
 
@@ -15,7 +15,7 @@ PERF_PIDS=`(IFS=$','; echo "${PIDS[*]}")`
 function start_perf() {
    for (( i=1; i<=${COUNT}; i++ ))
    do
-     timeout -t ${TIMEOUT}  /perf stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output --append
+     timeout -t ${TIMEOUT}  /perf stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output${OUT_SUFFIX} --append
    done
 }
 
