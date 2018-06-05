@@ -1,4 +1,7 @@
 #!/bin/bash
+TIMEOUT=${1:-60}
+COUNT=${2:-1}
+
 declare -a PIDS
 PIDS=($(ps -A -o pid=))
 
@@ -10,9 +13,16 @@ echo "Monitored PIDs: " "${PIDS[*]}"
 PERF_PIDS=`(IFS=$','; echo "${PIDS[*]}")`
 
 function start_perf() {
-   timeout -t 60  /perf stat -a -p $PERF_PIDS -x ',' -I 1000
+   for (( i=1; i<=${COUNT}; i++ ))
+   do
+     timeout -t ${TIMEOUT}  /perf stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output --append
+   done
 }
 
+
+#Trigger perf collection if /tmp/startperf is present
 while read i; do if [ "$i" = startperf ]; then start_perf; break; fi; done \
 < <(inotifywait  -e create,open,modify --format '%f' --monitor /tmp)
 
+#Long sleep :-)
+sleep 1000000000d
