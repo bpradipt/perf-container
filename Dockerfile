@@ -9,5 +9,6 @@ COPY --from=0 /linux-4.17/tools/perf/perf /
 RUN apk --no-cache add inotify-tools bash
 
 ADD entrypoint.sh /
+RUN cp /perf /usr/local/bin/
 
 ENTRYPOINT ["/entrypoint.sh"]
