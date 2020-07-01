@@ -1,5 +1,6 @@
 #!/bin/bash
 #entrypoint.sh <stat|record|probe> <trigger[1|0]> <max-run-time[X]> <repeat-count[N]> <extra-perf-args>
+PERF=/usr/bin/perf
 PERF_TYPE=${1:-record}
 TRIGGER=${2:-0}
 TIMEOUT=${3:-60}
@@ -20,16 +21,16 @@ PERF_PIDS=`(IFS=$','; echo "${PIDS[*]}")`
 function start_perf_stat() {
    for (( i=1; i<=${COUNT}; i++ ))
    do
-     echo "timeout -t ${TIMEOUT}  /perf stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output${OUT_SUFFIX} --append ${EXTRA_PERF_ARGS}"
-     timeout -t ${TIMEOUT}  /perf stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output${OUT_SUFFIX} --append ${EXTRA_PERF_ARGS}
+     echo "timeout -t ${TIMEOUT}  ${PERF} stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output${OUT_SUFFIX} --append ${EXTRA_PERF_ARGS}"
+     timeout -t ${TIMEOUT}  ${PERF} stat -a -p $PERF_PIDS -x ',' -I 1000  -A -o /out/perf-stat-output${OUT_SUFFIX} --append ${EXTRA_PERF_ARGS}
    done
 }
 
 function start_perf_record() {
    for (( i=1; i<=${COUNT}; i++ ))
    do
-     echo "timeout -t ${TIMEOUT}  /perf record -a -g -p $PERF_PIDS -o /out/perf-record-output${OUT_SUFFIX} ${EXTRA_PERF_ARGS}"
-     timeout -t ${TIMEOUT}  /perf record -a -p $PERF_PIDS -o /out/perf-record-output${OUT_SUFFIX} ${EXTRA_PERF_ARGS}
+     echo "timeout -t ${TIMEOUT}  ${PERF} record -a -g -p $PERF_PIDS -o /out/perf-record-output${OUT_SUFFIX} ${EXTRA_PERF_ARGS}"
+     timeout -t ${TIMEOUT}  ${PERF} record -a -p $PERF_PIDS -o /out/perf-record-output${OUT_SUFFIX} ${EXTRA_PERF_ARGS}
    done
 }
 
