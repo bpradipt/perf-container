@@ -3,9 +3,9 @@ kind: Pod
 metadata:
   annotations:
     openshift.io/scc: privileged
-  name: perf-ppc64le
+  name: perf
   labels:
-    app: perf-ppc64le
+    app: perf
   namespace: my-perf-project
 spec:
   securityContext: 
@@ -13,9 +13,9 @@ spec:
   hostNetwork: true
   hostPID: true
   containers:
-    - name: perf-ppc64le
+    - name: perf
       imagePullPolicy: Always
-      image: quay.io/piyushgupta1551/perf-ppc64le:1.2
+      image: quay.io/bpradipt/perf:latest
       securityContext: 
         capabilities:
           add: ["CAP_SYS_ADMIN"]
