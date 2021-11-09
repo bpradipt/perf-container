@@ -1,4 +1,4 @@
-IMAGE ?= bpradipt/perf
+IMAGE ?= quay.io/bpradipt/perf
 TAG ?= $(shell git describe --tags --always)
 RELEASE_TAG := $(shell cat VERSION)
 ARCH ?= $(shell uname -m)
@@ -11,28 +11,28 @@ endif
 
 
 image:  ## Builds a Linux based image
-	docker build -t "$(IMAGE_ARCH):$(TAG)" .
+	podman build -t "$(IMAGE_ARCH):$(TAG)" .
 
 push: image ## Pushes the image to dockerhub, REQUIRES SPECIAL PERMISSION
-	docker push "$(IMAGE_ARCH):$(TAG)"
+	podman push "$(IMAGE_ARCH):$(TAG)"
 
 release: image ## Pushes the image with latest and version tag to dockerhub, REQUIRES SPECIAL PERMISSION
-	docker tag "$(IMAGE_ARCH):$(TAG)" "$(IMAGE_ARCH):$(RELEASE_TAG)"
-	docker tag "$(IMAGE_ARCH):$(TAG)" "$(IMAGE_ARCH):latest"
-	docker push "$(IMAGE_ARCH):$(RELEASE_TAG)"
-	docker push "$(IMAGE_ARCH):latest"
+	podman tag "$(IMAGE_ARCH):$(TAG)" "$(IMAGE_ARCH):$(RELEASE_TAG)"
+	podman tag "$(IMAGE_ARCH):$(TAG)" "$(IMAGE_ARCH):latest"
+	podman push "$(IMAGE_ARCH):$(RELEASE_TAG)"
+	podman push "$(IMAGE_ARCH):latest"
 
 manifest: release ## Create multi-arch manifest
-	docker manifest create --amend $(IMAGE):$(RELEASE_TAG) \
-	$(IMAGE)-amd64:$(RELEASE_TAG) \
-	$(IMAGE)-ppc64le:$(RELEASE_TAG)
+	podman manifest create $(IMAGE):$(RELEASE_TAG) \
+		docker://$(IMAGE)-amd64:$(RELEASE_TAG) \
+		docker://$(IMAGE)-ppc64le:$(RELEASE_TAG)
 
-	docker manifest create --amend $(IMAGE):latest \
-	$(IMAGE)-amd64:latest \
-	$(IMAGE)-ppc64le:latest
+	podman manifest create $(IMAGE):latest \
+		docker://$(IMAGE)-amd64:latest \
+		docker://$(IMAGE)-ppc64le:latest
 
-	docker manifest push $(IMAGE):$(RELEASE_TAG)
-	docker manifest push $(IMAGE):latest
+	podman manifest push $(IMAGE):$(RELEASE_TAG) docker://$(IMAGE):$(RELEASE_TAG)
+	podman manifest push $(IMAGE):latest docker://$(IMAGE):latest
 
 help: ## Shows the help
 	@echo 'Usage: make <OPTIONS> ... <TARGETS>'
